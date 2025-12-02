@@ -1,0 +1,17 @@
+services:
+  sunsama-relay:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - SUNSAMA_EMAIL=${SUNSAMA_EMAIL}
+      - SUNSAMA_PASSWORD=${SUNSAMA_PASSWORD}
+      - API_KEY=${API_KEY}
+      - PORT=3000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s

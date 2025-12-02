@@ -1,0 +1,31 @@
+{
+  "name": "sunsama-relay",
+  "version": "0.1.0",
+  "description": "Self-hosted REST API relay for Sunsama - connect your automation tools",
+  "type": "module",
+  "main": "src/main.ts",
+  "scripts": {
+    "dev": "bun --env-file=.env run src/main.ts",
+    "start": "bun run src/main.ts",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch"
+  },
+  "dependencies": {
+    "hono": "^4.6.0",
+    "sunsama-api": "^0.12.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5"
+  },
+  "keywords": [
+    "sunsama",
+    "rest-api",
+    "automation",
+    "n8n",
+    "self-hosted"
+  ],
+  "author": "Robert Niimi <robertn702@gmail.com>",
+  "license": "MIT"
+}
