@@ -11,9 +11,10 @@
     "typecheck:watch": "tsc --noEmit --watch"
   },
   "dependencies": {
+    "@hono/zod-openapi": "^1.1.5",
     "hono": "^4.6.0",
     "sunsama-api": "^0.12.0",
-    "zod": "^3.25.0"
+    "zod": "4"
   },
   "devDependencies": {
     "@types/bun": "latest",

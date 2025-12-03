@@ -268,7 +268,28 @@ All errors follow this format:
 | 404 | NOT_FOUND | Resource not found |
 | 500 | INTERNAL_ERROR | Server error |
 
+## OpenAPI / Swagger
+
+The server automatically generates an OpenAPI 3.0 specification at:
+
+```
+GET /openapi.json
+```
+
+This can be imported into tools like:
+- **N8N**: Import the spec for auto-discovery of endpoints
+- **Postman**: Import for API testing
+- **Swagger UI**: View interactive documentation
+
 ## N8N Integration
+
+### Option 1: Import OpenAPI Spec
+
+1. In N8N, use the OpenAPI node
+2. Point it to `http://your-server:3000/openapi.json`
+3. N8N will auto-discover all available endpoints
+
+### Option 2: Manual HTTP Requests
 
 1. In N8N, create an HTTP Request node
 2. Set the base URL to your relay server (e.g., `http://localhost:3000`)
