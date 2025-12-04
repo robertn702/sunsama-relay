@@ -23,7 +23,7 @@ export const TaskSchema = z
     _id: z.string(),
     text: z.string(),
   })
-  .passthrough()
+  .catchall(z.unknown())
   .openapi("Task");
 
 export const TaskListSchema = z.array(TaskSchema).openapi("TaskList");
@@ -36,7 +36,7 @@ export const StreamSchema = z
     _id: z.string(),
     streamName: z.string(),
   })
-  .passthrough()
+  .catchall(z.unknown())
   .openapi("Stream");
 
 export const StreamListSchema = z.array(StreamSchema).openapi("StreamList");
@@ -47,7 +47,7 @@ export const UserSchema = z
   .object({
     _id: z.string(),
   })
-  .passthrough()
+  .catchall(z.unknown())
   .openapi("User");
 
 export const TimezoneSchema = z
@@ -137,7 +137,7 @@ export const TaskActionResponseSchema = z
     message: z.string(),
     taskId: z.string(),
   })
-  .passthrough()
+  .catchall(z.unknown())
   .openapi("TaskActionResponse");
 
 export const UpdateTaskResponseSchema = z
@@ -148,7 +148,7 @@ export const UpdateTaskResponseSchema = z
   })
   .openapi("UpdateTaskResponse");
 
-export const CreateTaskResponseSchema = z.object({}).passthrough().openapi("CreateTaskResponse");
+export const CreateTaskResponseSchema = z.object({}).catchall(z.unknown()).openapi("CreateTaskResponse");
 
 // ============ Path Parameter Schemas ============
 
