@@ -44,7 +44,7 @@ bun run start
 ```bash
 curl http://localhost:3000/health
 
-curl -H "Authorization: Bearer your-api-key" \
+curl -H "Authorization: Bearer $API_KEY" \
   http://localhost:3000/api/user
 ```
 
@@ -86,8 +86,10 @@ docker run -d \
 All endpoints except `/health` require authentication via the `Authorization` header:
 
 ```
-Authorization: Bearer your-api-key
+Authorization: Bearer $API_KEY
 ```
+
+Or use the `API_KEY` environment variable in your requests.
 
 ### Health Check
 
@@ -293,7 +295,7 @@ This can be imported into tools like:
 
 1. In N8N, create an HTTP Request node
 2. Set the base URL to your relay server (e.g., `http://localhost:3000`)
-3. Add a header: `Authorization: Bearer your-api-key`
+3. Add a header: `Authorization: Bearer $API_KEY` (use your API key from environment variables)
 4. Configure the endpoint and method as needed
 
 Example: Get today's tasks
@@ -302,7 +304,7 @@ Example: Get today's tasks
 Method: GET
 URL: http://localhost:3000/api/tasks?date={{$now.format('yyyy-MM-dd')}}
 Headers:
-  Authorization: Bearer your-api-key
+  Authorization: Bearer $API_KEY
 ```
 
 ## Session Management
