@@ -68,6 +68,46 @@ export const GetArchivedTasksQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(50).openapi({ example: 50 }),
 });
 
+// ============ Integration Schemas ============
+
+export const GithubIntegrationIdentifierSchema = z.object({
+  id: z.string().openapi({ description: "GitHub issue or PR ID" }),
+  repositoryOwnerLogin: z.string().openapi({ description: "GitHub repository owner login" }),
+  repositoryName: z.string().openapi({ description: "GitHub repository name" }),
+  number: z.number().int().openapi({ description: "GitHub issue or PR number" }),
+  type: z.enum(["Issue", "PullRequest"]).openapi({ description: "Type of GitHub item" }),
+  url: z.string().url().openapi({ description: "URL to the GitHub issue or PR" }),
+  __typename: z.literal("TaskGithubIntegrationIdentifier").default("TaskGithubIntegrationIdentifier"),
+});
+
+export const GithubIntegrationSchema = z
+  .object({
+    service: z.literal("github"),
+    identifier: GithubIntegrationIdentifierSchema,
+    __typename: z.literal("TaskGithubIntegration").default("TaskGithubIntegration"),
+  })
+  .openapi("GithubIntegration");
+
+export const GmailIntegrationIdentifierSchema = z.object({
+  id: z.string().openapi({ description: "Gmail message ID" }),
+  messageId: z.string().openapi({ description: "Gmail message ID" }),
+  accountId: z.string().openapi({ description: "Gmail account ID" }),
+  url: z.string().url().openapi({ description: "URL to the Gmail message" }),
+  __typename: z.literal("TaskGmailIntegrationIdentifier").default("TaskGmailIntegrationIdentifier"),
+});
+
+export const GmailIntegrationSchema = z
+  .object({
+    service: z.literal("gmail"),
+    identifier: GmailIntegrationIdentifierSchema,
+    __typename: z.literal("TaskGmailIntegration").default("TaskGmailIntegration"),
+  })
+  .openapi("GmailIntegration");
+
+export const TaskIntegrationSchema = z
+  .discriminatedUnion("service", [GithubIntegrationSchema, GmailIntegrationSchema])
+  .openapi("TaskIntegration");
+
 // ============ Request Body Schemas ============
 
 export const CreateTaskBodySchema = z
@@ -79,6 +119,7 @@ export const CreateTaskBodySchema = z
     dueDate: z.string().optional().openapi({ description: "Due date (ISO 8601)" }),
     snoozeUntil: z.string().optional().openapi({ description: "Schedule date (ISO 8601)" }),
     private: z.boolean().optional().openapi({ description: "Private task flag" }),
+    integration: TaskIntegrationSchema.optional().openapi({ description: "External service integration (GitHub, Gmail)" }),
   })
   .openapi("CreateTaskRequest");
 
