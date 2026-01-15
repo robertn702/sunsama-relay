@@ -266,7 +266,7 @@ taskRoutes.openapi(getTasksByDayRoute, async (c) => {
   try {
     const { date, timezone } = c.req.valid("query");
     const tasks = await withClient((client) =>
-      client.getTasksByDay(date, timezone)
+      client.getTasksByDay(date, timezone),
     );
     return c.json(tasks, 200);
   } catch (error) {
@@ -274,9 +274,10 @@ taskRoutes.openapi(getTasksByDayRoute, async (c) => {
     return c.json(
       {
         error: "FETCH_ERROR",
-        message: error instanceof Error ? error.message : "Failed to fetch tasks",
+        message:
+          error instanceof Error ? error.message : "Failed to fetch tasks",
       },
-      500
+      500,
     );
   }
 });
@@ -293,7 +294,7 @@ taskRoutes.openapi(getBacklogRoute, async (c) => {
         message:
           error instanceof Error ? error.message : "Failed to fetch backlog",
       },
-      500
+      500,
     );
   }
 });
@@ -302,7 +303,7 @@ taskRoutes.openapi(getArchivedRoute, async (c) => {
   try {
     const { offset, limit } = c.req.valid("query");
     const tasks = await withClient((client) =>
-      client.getArchivedTasks(offset, limit)
+      client.getArchivedTasks(offset, limit),
     );
     return c.json(
       {
@@ -314,7 +315,7 @@ taskRoutes.openapi(getArchivedRoute, async (c) => {
           hasMore: tasks.length === limit,
         },
       },
-      200
+      200,
     );
   } catch (error) {
     console.error("Error fetching archived tasks:", error);
@@ -322,9 +323,11 @@ taskRoutes.openapi(getArchivedRoute, async (c) => {
       {
         error: "FETCH_ERROR",
         message:
-          error instanceof Error ? error.message : "Failed to fetch archived tasks",
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch archived tasks",
       },
-      500
+      500,
     );
   }
 });
@@ -340,7 +343,7 @@ taskRoutes.openapi(getTaskByIdRoute, async (c) => {
           error: "NOT_FOUND",
           message: `Task with ID ${id} not found`,
         },
-        404
+        404,
       );
     }
 
@@ -350,26 +353,38 @@ taskRoutes.openapi(getTaskByIdRoute, async (c) => {
     return c.json(
       {
         error: "FETCH_ERROR",
-        message: error instanceof Error ? error.message : "Failed to fetch task",
+        message:
+          error instanceof Error ? error.message : "Failed to fetch task",
       },
-      500
+      500,
     );
   }
 });
 
 taskRoutes.openapi(createTaskRoute, async (c) => {
   try {
-    const { text, ...options } = c.req.valid("json");
-    const task = await withClient((client) => client.createTask(text, options));
+    const { text, snoozeUntil, dueDate, ...options } = c.req.valid("json");
+
+    // Convert date strings to Date objects for sunsama-api
+    const taskOptions = {
+      ...options,
+      ...(snoozeUntil && { snoozeUntil: new Date(snoozeUntil) }),
+      ...(dueDate && { dueDate: new Date(dueDate) }),
+    };
+
+    const task = await withClient((client) =>
+      client.createTask(text, taskOptions),
+    );
     return c.json(task, 201);
   } catch (error) {
     console.error("Error creating task:", error);
     return c.json(
       {
         error: "CREATE_ERROR",
-        message: error instanceof Error ? error.message : "Failed to create task",
+        message:
+          error instanceof Error ? error.message : "Failed to create task",
       },
-      500
+      500,
     );
   }
 });
@@ -389,7 +404,9 @@ taskRoutes.openapi(updateTaskRoute, async (c) => {
     }
 
     if (timeEstimate !== undefined) {
-      await withClient((client) => client.updateTaskPlannedTime(id, timeEstimate));
+      await withClient((client) =>
+        client.updateTaskPlannedTime(id, timeEstimate),
+      );
     }
 
     if (dueDate !== undefined) {
@@ -407,16 +424,17 @@ taskRoutes.openapi(updateTaskRoute, async (c) => {
         taskId: id,
         updatedFields: Object.keys(updates),
       },
-      200
+      200,
     );
   } catch (error) {
     console.error("Error updating task:", error);
     return c.json(
       {
         error: "UPDATE_ERROR",
-        message: error instanceof Error ? error.message : "Failed to update task",
+        message:
+          error instanceof Error ? error.message : "Failed to update task",
       },
-      500
+      500,
     );
   }
 });
@@ -432,16 +450,17 @@ taskRoutes.openapi(deleteTaskRoute, async (c) => {
         taskId: id,
         result,
       },
-      200
+      200,
     );
   } catch (error) {
     console.error("Error deleting task:", error);
     return c.json(
       {
         error: "DELETE_ERROR",
-        message: error instanceof Error ? error.message : "Failed to delete task",
+        message:
+          error instanceof Error ? error.message : "Failed to delete task",
       },
-      500
+      500,
     );
   }
 });
@@ -461,7 +480,7 @@ taskRoutes.openapi(completeTaskRoute, async (c) => {
     }
 
     const result = await withClient((client) =>
-      client.updateTaskComplete(id, completedAt)
+      client.updateTaskComplete(id, completedAt),
     );
 
     return c.json(
@@ -471,16 +490,17 @@ taskRoutes.openapi(completeTaskRoute, async (c) => {
         completedAt: completedAt.toISOString(),
         result,
       },
-      200
+      200,
     );
   } catch (error) {
     console.error("Error completing task:", error);
     return c.json(
       {
         error: "UPDATE_ERROR",
-        message: error instanceof Error ? error.message : "Failed to complete task",
+        message:
+          error instanceof Error ? error.message : "Failed to complete task",
       },
-      500
+      500,
     );
   }
 });
@@ -492,7 +512,7 @@ taskRoutes.openapi(snoozeTaskRoute, async (c) => {
 
     const options = timezone ? { timezone } : undefined;
     const result = await withClient((client) =>
-      client.updateTaskSnoozeDate(id, date, options)
+      client.updateTaskSnoozeDate(id, date, options),
     );
 
     return c.json(
@@ -502,16 +522,17 @@ taskRoutes.openapi(snoozeTaskRoute, async (c) => {
         scheduledDate: date,
         result,
       },
-      200
+      200,
     );
   } catch (error) {
     console.error("Error snoozing task:", error);
     return c.json(
       {
         error: "UPDATE_ERROR",
-        message: error instanceof Error ? error.message : "Failed to snooze task",
+        message:
+          error instanceof Error ? error.message : "Failed to snooze task",
       },
-      500
+      500,
     );
   }
 });
@@ -520,7 +541,7 @@ taskRoutes.openapi(backlogTaskRoute, async (c) => {
   try {
     const { id } = c.req.valid("param");
     const result = await withClient((client) =>
-      client.updateTaskSnoozeDate(id, null)
+      client.updateTaskSnoozeDate(id, null),
     );
 
     return c.json(
@@ -529,7 +550,7 @@ taskRoutes.openapi(backlogTaskRoute, async (c) => {
         taskId: id,
         result,
       },
-      200
+      200,
     );
   } catch (error) {
     console.error("Error moving task to backlog:", error);
@@ -537,9 +558,11 @@ taskRoutes.openapi(backlogTaskRoute, async (c) => {
       {
         error: "UPDATE_ERROR",
         message:
-          error instanceof Error ? error.message : "Failed to move task to backlog",
+          error instanceof Error
+            ? error.message
+            : "Failed to move task to backlog",
       },
-      500
+      500,
     );
   }
 });
